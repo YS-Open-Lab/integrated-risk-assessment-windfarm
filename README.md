@@ -105,3 +105,81 @@ The dataset is stored in:
 
 ```text
 data/wind_farm_risk_dataset.csv
+## Dataset
+
+It contains **1,200 records** and includes both feature variables and labels. The label is binary:
+
+- `0` = Low Risk
+- `1` = High Risk
+
+The data are approximately balanced:
+
+- **622 low-risk samples**
+- **578 high-risk samples**
+
+### Data Fields
+
+| Field | Description |
+|---|---|
+| `风电场群总出力_MW` | Total output of wind farm cluster |
+| `集电线路故障率_次百km年` | Line fault rate |
+| `箱变渗漏油次数_次月` | Oil leak count |
+| `风机基础沉降速率_mm月` | Foundation settlement |
+| `场区道路承载力_MPa` | Road capacity |
+| `电缆沟积水深度_mm` | Cable trench water depth |
+| `集电系统电压不平衡度_%` | Voltage unbalance |
+| `升压站设备温升_℃` | Substation temperature rise |
+| `防雷接地电阻_Ω` | Ground resistance |
+| `风机可利用率_%` | Turbine availability |
+| `CRI综合风险指数` | Comprehensive Risk Index |
+| `风险等级_二分类` | Binary risk label |
+
+### Label Construction
+
+The binary target is derived from the **Comprehensive Risk Index (CRI)**. The CRI is constructed by weighted fusion of multiple risk-related variables, with the median used as the classification threshold.
+
+---
+
+## Repository Structure
+
+```text
+integrated-risk-assessment-windfarm/
+├─ README.md
+├─ requirements.txt
+├─ code/
+│  ├─ step1_correlation_heatmap.py
+│  ├─ step2_models_training.py
+│  ├─ step3_visualizations.py
+│  ├─ step4_shap_lime.py
+│  ├─ combine_panels.py
+│  └─ combine_roc_pr.py
+├─ data/
+│  └─ wind_farm_risk_dataset.csv
+├─ figures/
+│  ├─ logo.png
+│  ├─ step1_correlation_heatmap.png
+│  ├─ step2_metrics_barplot.png
+│  ├─ step3_fig1_roc_curves.png
+│  ├─ step3_fig2_pr_curves.png
+│  ├─ step3_fig3_radar.png
+│  ├─ step3_fig4_confusion_matrices.png
+│  ├─ step3_fig5_metrics_heatmap.png
+│  ├─ step4_shap_fig1_beeswarm.png
+│  ├─ step4_shap_fig2_bar_importance.png
+│  ├─ step4_shap_fig3_dependence.png
+│  ├─ step4_shap_fig4_waterfall.png
+│  ├─ step4_lime_fig1_highrisk.png
+│  ├─ step4_lime_fig2_lowrisk.png
+│  ├─ step4_lime_fig3_aggregate.png
+│  ├─ step4_lime_fig4_vs_shap.png
+│  ├─ panel_roc_pr.png
+│  ├─ panel_shap.png
+│  └─ panel_lime.png
+├─ tables/
+│  └─ step2_metrics_table.csv
+├─ models/
+│  └─ model_results.pkl
+├─ weights/
+│  └─ mcafnet_weights.pth
+└─ report/
+   └─ wind_farm_experiment_report.docx
