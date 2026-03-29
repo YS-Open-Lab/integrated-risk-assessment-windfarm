@@ -101,12 +101,6 @@ The project uses 10 feature variables spanning electrical-system and civil-infra
 
 ## Dataset
 
-The dataset is stored in:
-
-```text
-data/wind_farm_risk_dataset.csv
-## Dataset
-
 It contains **1,200 records** and includes both feature variables and labels. The label is binary:
 
 - `0` = Low Risk
