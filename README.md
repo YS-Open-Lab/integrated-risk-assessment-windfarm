@@ -177,3 +177,241 @@ integrated-risk-assessment-windfarm/
 │  └─ mcafnet_weights.pth
 └─ report/
    └─ wind_farm_experiment_report.docx
+## Environment
+
+Install dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+
+A recommended `requirements.txt` is:
+
+```txt
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.12
+scipy>=1.10
+scikit-learn>=1.3
+torch>=2.0
+shap>=0.44
+lime>=0.2.0.1
+```
+
+The current codebase uses `numpy`, `pandas`, `matplotlib`, `seaborn`, `scipy`, `scikit-learn`, `torch`, `shap`, and `lime`.
+
+---
+
+## How to Run
+
+Run the scripts in the following order:
+
+```bash
+python code/step1_correlation_heatmap.py
+python code/step2_models_training.py
+python code/step3_visualizations.py
+python code/step4_shap_lime.py
+python code/combine_roc_pr.py
+python code/combine_panels.py
+```
+
+### Workflow Summary
+
+- **Step 1:** Generate correlation heatmap
+- **Step 2:** Train models and save metrics, weights, and intermediate outputs
+- **Step 3:** Generate model comparison figures
+- **Step 4:** Generate SHAP and LIME explainability figures
+- **Panel scripts:** Merge figures into paper-ready panel images
+
+---
+
+## Experimental Results
+
+### 1. Feature Correlation Analysis
+
+![Correlation Heatmap](figures/step1_correlation_heatmap.png)
+
+This heatmap presents Pearson correlations among the 10 core features, the CRI index, and the binary risk label. The plot shows that **CRI Index** and **Risk Label** have notable associations with variables such as **Total Output**, **Line Fault Rate**, and several infrastructure-related indicators. This figure is used as an initial feature relationship diagnostic before model training.
+
+### 2. Overall Model Performance Comparison
+
+![Metrics Barplot](figures/step2_metrics_barplot.png)
+
+The bar-chart comparison shows that **MCAF-Net (Proposed)** achieves the best overall performance across all six evaluation metrics: **Accuracy, Precision, Recall, F1, AUC-ROC, and MCC**. This is consistent with the reported test-set results in the paper, where MCAF-Net outperforms all ten baselines.
+
+### 3. ROC and Precision-Recall Curves
+
+![ROC and PR Curves](figures/panel_roc_pr.png)
+
+The combined ROC and Precision-Recall panel highlights the comparative discriminative ability of all 11 models. The proposed MCAF-Net curve consistently dominates the baselines, especially in the **low-false-positive region** and **high-recall region**. This indicates stronger ranking ability and better robustness for high-risk sample identification.
+
+#### Individual ROC Curve
+
+![ROC Curves](figures/step3_fig1_roc_curves.png)
+
+#### Individual Precision-Recall Curve
+
+![PR Curves](figures/step3_fig2_pr_curves.png)
+
+### 4. Radar Chart
+
+![Radar Chart](figures/step3_fig3_radar.png)
+
+The radar chart provides a compact comparison across six evaluation metrics. The proposed model forms the outermost envelope over most axes, visually confirming its balanced superiority rather than improvement on only a single metric.
+
+### 5. Confusion Matrices
+
+![Confusion Matrices](figures/step3_fig4_confusion_matrices.png)
+
+The confusion matrix grid shows prediction behavior for all compared models. The MCAF-Net confusion matrix demonstrates a relatively balanced detection ability for both low-risk and high-risk classes, supporting its stronger overall **F1** and **MCC** performance.
+
+### 6. Metrics Heatmap
+
+![Metrics Heatmap](figures/step3_fig5_metrics_heatmap.png)
+
+The heatmap summarizes all model scores in matrix form and highlights the proposed MCAF-Net row. It clearly shows that MCAF-Net leads across all six metrics, consistent with the ranking logic implemented in the training pipeline.
+
+---
+
+## Explainability Analysis
+
+### 1. SHAP Overview Panel
+
+![SHAP Panel](figures/panel_shap.png)
+
+The SHAP panel combines four complementary views:
+
+- global beeswarm summary
+- global feature importance
+- dependence plots
+- local waterfall explanation
+
+Together, they provide both population-level and sample-level interpretation for the proposed model. The main influential variables include **Total Output**, **Line Fault Rate**, and **Voltage Unbalance**.
+
+#### SHAP Beeswarm Summary
+
+![SHAP Beeswarm](figures/step4_shap_fig1_beeswarm.png)
+
+The SHAP beeswarm plot shows both feature importance ordering and directional impact. **Total Output (MW)** is the most dominant factor, followed by **Line Fault Rate** and **Voltage Unbalance (%)**. The color distribution also shows how different feature magnitudes push predictions toward higher or lower risk.
+
+#### SHAP Global Feature Importance
+
+![SHAP Bar Importance](figures/step4_shap_fig2_bar_importance.png)
+
+This global bar chart quantifies the mean absolute SHAP value of each feature. It confirms that **Total Output** contributes far more strongly than the remaining variables, while **Line Fault Rate**, **Voltage Unbalance**, and **Foundation Settlement** also play important roles.
+
+#### SHAP Dependence Plots
+
+![SHAP Dependence](figures/step4_shap_fig3_dependence.png)
+
+The dependence plots reveal nonlinear relationships between feature magnitude and SHAP contribution. In the current result, **Total Output** and **Line Fault Rate** are selected as the two most important features, and their contribution trends change systematically with feature value.
+
+#### SHAP Waterfall Plot
+
+![SHAP Waterfall](figures/step4_shap_fig4_waterfall.png)
+
+The waterfall plot explains one representative high-risk sample. It shows how individual features cumulatively move the prediction from the base value toward a high-risk probability. In the paper, **Voltage Unbalance** and **Line Fault Rate** are identified as major positive contributors for this type of sample.
+
+### 2. LIME Overview Panel
+
+![LIME Panel](figures/panel_lime.png)
+
+The LIME panel complements SHAP with instance-level local explanations and cross-method comparison. It includes:
+
+- high-risk sample explanation
+- low-risk sample explanation
+- aggregate feature importance
+- LIME vs SHAP comparison
+
+#### LIME High-Risk Sample Explanation
+
+![LIME High Risk](figures/step4_lime_fig1_highrisk.png)
+
+This figure explains a true high-risk prediction at the local level. Positive bars indicate variables that support the high-risk class, while negative bars reduce that tendency. The chart is useful for understanding why a specific sample is flagged as risky.
+
+#### LIME Low-Risk Sample Explanation
+
+![LIME Low Risk](figures/step4_lime_fig2_lowrisk.png)
+
+This figure shows a local explanation for a low-risk sample. Compared with the high-risk example, the contribution pattern is different, illustrating how the same model responds differently under safer operating conditions.
+
+#### LIME Aggregate Feature Importance
+
+![LIME Aggregate](figures/step4_lime_fig3_aggregate.png)
+
+The aggregate LIME figure summarizes mean absolute feature importance across 50 test samples. The resulting ranking is broadly consistent with the SHAP global ranking, which supports the robustness of the interpretability findings.
+
+#### LIME vs SHAP Comparison
+
+![LIME vs SHAP](figures/step4_lime_fig4_vs_shap.png)
+
+This comparison plot normalizes feature importance from SHAP and LIME into the same scale. The close alignment between the two methods supports cross-method consistency in feature attribution. The paper reports strong agreement between SHAP and LIME rankings.
+
+---
+
+## Saved Artifacts
+
+### Saved Weights
+
+```text
+weights/mcafnet_weights.pth
+```
+
+This file stores trained MCAF-Net weights for downstream inference and explainability.
+
+### Serialized Results
+
+```text
+models/model_results.pkl
+```
+
+This file stores saved model outputs, including predictions, probabilities, and test-set related artifacts used by later visualization scripts.
+
+### Metrics Table
+
+```text
+tables/step2_metrics_table.csv
+```
+
+This CSV file records the core metric comparison across all models.
+
+---
+
+## Report
+
+The project report is located at:
+
+```text
+report/wind_farm_experiment_report.docx
+```
+
+The report documents:
+
+- research background
+- data collection and preprocessing
+- CRI-based label construction
+- statistical description
+- machine learning validation
+- dataset field definitions
+
+---
+
+## Citation
+
+If you use this repository in academic or technical work, please cite the corresponding paper:
+
+```text
+Integrated Risk Assessment of Load Shedding and Civil Infrastructure Failure in Wind Farm Clusters Using Machine Learning and SHAP
+```
+
+---
+
+## Notes
+
+- If `figures/logo.png` does not exist yet, delete the top logo line or add your lab logo there.
+- This repository contains both intermediate files and report-ready figures.
+- The current implementation is organized as a complete experiment pipeline rather than a lightweight demo.
+- The project is suitable for academic research, result presentation, and follow-up extension work.
+
+
