@@ -1,6 +1,4 @@
-# <div align="center">  
-  <img src="figures/logo.png" alt="logo" width="120"/>
-</div>
+
 
 # <div align="center">Integrated Risk Assessment of Load Shedding and Civil Infrastructure Failure in Wind Farm Clusters Using Machine Learning and SHAP</div>
 
